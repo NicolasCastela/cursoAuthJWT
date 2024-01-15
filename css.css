@@ -1,0 +1,5 @@
+/* Exemplo: Mover o painel de pastas para o lado direito */
+.workbench > .part.editor > .content > .editor-group-container > .title,
+.workbench > .part.sidebar > .content > .composite.title {
+  order: 1 !important;
+}

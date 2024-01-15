@@ -66,6 +66,42 @@ app.get("/allusers", async (req, res) => {
   }
 });
 
+//Login User
+
+app.post("/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email) {
+    return res.status(422).json({ msg: "o email é obrigatorio" });
+  }
+  if (!password) {
+    res.status(422).json({ msg: "a senha é obrigatoria" });
+  }
+
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    return res.status(422).json({ msg: "Usuario nao encontrado" });
+  }
+  const checkPassoword = await bcrypt.compare(password, user.password);
+  if (!checkPassoword) {
+    return res.status(422).json({ msg: "senha invalida" });
+  }
+
+  try {
+    const secret = process.env.SECRET;
+    const token = jwt.sign(
+      {
+        id: user._id,
+      },
+      secret
+    );
+
+    res.status(200).json({ msg: "autenticação realizada com sucesso", token });
+  } catch (e) {
+    res.status(500).json({ msg: "Aconteceu um erro", e });
+  }
+});
+
 //Credencials
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASS;
